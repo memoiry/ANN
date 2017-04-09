@@ -113,11 +113,17 @@ p-stable 分布重要的应用就是可以估计给定向量 $v$ 的 p 范数 $|
 ## Reference
 
 [flann](http://www.cs.ubc.ca/research/flann/)
+
 [flann user manual](http://www.cs.ubc.ca/research/flann/uploads/FLANN/flann_manual-1.8.4.pdf)
+
 [Mining of Massive Datasets cp3](http://infolab.stanford.edu/~ullman/mmds/ch3.pdf)
+
 [Locality-Sensitive Hashing for Finding Nearest Neighbors](http://www.matlabi.ir/wp-content/uploads/bank_papers/g_paper/g15_Matlabi.ir_Locality-Sensitive%20Hashing%20for%20Finding%20Nearest%20Neighbors.pdf)
+
 [LSH和p-stable LSH ](http://blog.sina.com.cn/s/blog_67914f2901019p3v.html)
+
 [$E^2LSH$](http://www.mit.edu/~andoni/LSH/)
+
 [$E^2LSH$ user manual](http://www.mit.edu/~andoni/LSH/manual.pdf)
 
 
