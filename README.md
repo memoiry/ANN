@@ -7,19 +7,50 @@ A matlab interface is implemented.
 
 ### Experiment of pyflann-kdtree and p-stable LSH
 
-* Install Pyflann and download the source code from github.
+Install Pyflann and download the source code from github.
 
 ```bash
 pip install pyflann
 git clone https://github.com/memoiry/flann_lsh
 ```
 
-* Put the sift and gist data in the code folder and run the command below.
+Put the sift and gist data in the code folder and run the command below.
 
 ```bash
 cd flann_lsh/src
 python run_exp.py
 ```
+
+Generate the result figure.
+
+```bash
+python analysis.py
+```
+
+### PLSH class usage
+
+
+```python
+dataset = np.random.randn(10000,100)*100
+testset = np.random.randn(100,100)*10000
+w = 4
+k_num = 5
+k_set = [6, 12]
+L_set = [12, 16, 20]
+ground_truth = linear_search(dataset, testset, k_num)
+print "ground truth computing finished"
+print "k L    recall    touched    recall/touched"
+for k in k_set:
+	for L in L_set:
+		lsh = PLSH(k, L, 5000)
+		lsh.build_index(dataset)
+		result, dists, candi_avg = lsh.query(testset, k_num)
+		acc = recall(result, ground_truth, k_num)
+		candi_avg = candi_avg * 100
+		prop = acc / candi_avg
+		print k, L, ' ',' ','{} %   {} %'.format(acc,candi_avg), ' ', ' ', prop
+```
+
 
 ### Matlab Interface 
 
@@ -38,28 +69,50 @@ acc = recall(result, ground_truth, k)
 
 ## Result
 
-### pyflann-KDTree
+
+### Hardware 
+
+* Macbook Pro 2014 mid 
+* CPU: Intel Core i5, 3.30GHz, 8GB RAM
+
+### flann-KDTree
 
 With each case tested tree times, I obtained the average result as below.
 
-|SIFT|trees_num|build_index_time|query_time|recall|
+|SIFT1M|trees_num|build_index_time|query_time|recall|
 | --- | --- | --- | --- | --- |
-| |1| 2.185s|0.639s|14.926% | 
-| |2| 4.11s|0.68s|17.35% | 
-| |4| 8.21s|0.72s|19.324% | 
-| |8| 17.01s|0.79s|21.134% |
-| |16| 33.07s|1.28s|23.128% |
-| |20| 40.68s|0.94s|23.714% | 
-| |50|100.87s|9.31s|24.798%|
+| |1| 2.08284833 s|0.74010967 s|14.95466667% | 
+| |2| 4.12112733 s|0.71987233 s|17.12533333% | 
+| |4| 8.18949567 s|0.765749 s|19.35866667% | 
+| |8| 17.13675167 s|0.849271 s|21.41666667% |
+| |16| 33.510805 s|1.06547133 s|23.084% |
+| |20| 41.50947367 s|0.96465 s|23.62933333% | 
+| |50|105.59373 s|4.74227467 s|24.89866667%|
 
-|GIST|table_number|build_index_time|query_time_1000|recall|
+<p align="center">
+    <img src="https://ooo.0o0.ooo/2017/04/10/58eb9d7a83052.png" width="640">
+</p>
+<p align="center" style="color:rgb(220,220,220);">
+    Figure 1: SIFT1M dataset using KDTree
+</p>
+
+
+|GIST1M|trees_num|build_index_time|query_time_1000|recall|
 | --- | --- | --- | --- | --- |
-| |1| - | - | - |
-| |2| - | - | - |
-| |4| - | - | - |
-| |8| - | - | - |
-| |12| - | - | - |
-| |18| - | - | - |
+| |1| 22.37788067 s |0.19616767 s  |1.69933333%|
+| |2| 14.997726 s|0.20544 s |1.93033333% |
+| |4| 29.95796067 s| 0.20738733 s |2.13033333% |
+| |8| 59.04745633 s| 0.24303767 s|2.37866667%|
+| |16| 121.12752067 s| 0.250128 s|2.657% |
+| |20| 147.43397433 s | 0.32388233 s | 2.69933333% |
+
+
+<p align="center">
+    <img src="https://ooo.0o0.ooo/2017/04/10/58eb9d79ca7e0.png" width="640">
+</p>
+<p align="center" style="color:rgb(220,220,220);">
+    Figure 2: GIST1M dataset using KDTree
+</p>
 
 ### p-stable LSH
 
@@ -67,24 +120,49 @@ Let k = 100, select 20 query randomly from the query data set and obtain the ave
 
 With each case tested tree times, I obtained the average result as below.
 
-|SIFT|table_num|key|build_index_time|query_time|recall|touched|proportion|
+|SIFT1M|table_num|key|build_index_time|query_time|recall|touched|proportion|
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| |6| 14 | 357.82s | 0.654s | 52.2% | 3.8% | 13.71 |
-| |6| 16  | 404.68s | 0.657s | 51.85% |3.92% | 13.19|
-| |6| 20 | 511.31s | 1.502s | 30.05% | 0.72%| 41.99|
-| |6| 12  | 327.57s | 1.213s | 59.8% | 6.95%|  8.60|
-| |8| 12 | 439.08s | 1.048s | 67.85% | 5.82%| 11.65|
-| |12| 12  | 662.57s | 1.743s | 83.25% | 9.74%| 8.54|
+| |6| 14 | 357.82 s | 0.654 s | 52.2% | 3.8% | 13.71 |
+| |6| 16  | 404.68 s | 0.657 s | 51.85% |3.92% | 13.19|
+| |6| 20 | 511.31 s | 1.502 s | 30.05% | 0.72%| 41.99|
+| |6| 12  | 327.57 s | 1.213 s | 59.8% | 6.95%|  8.60|
+| |8| 12 | 439.08 s | 1.048 s | 67.85% | 5.82%| 11.65|
+| |12| 12  | 662.57 s | 1.743 s | 83.25% | 9.74%| 8.54|
 
-|GIST|table_num|key_size|build_index_time|query_time|recall|touched|proportion|
+<p align="center">
+    <img src="https://ooo.0o0.ooo/2017/04/10/58eb9e7140a93.png" width="640">
+</p>
+<p align="center" style="color:rgb(220,220,220);">
+    Figure 3: SIFT1M dataset using LSH with the size of key varies.
+</p>
+
+<p align="center">
+    <img src="https://ooo.0o0.ooo/2017/04/10/58eb9e75a72fc.png" width="640">
+</p>
+<p align="center" style="color:rgb(220,220,220);">
+    Figure 4: SIFT1M dataset using LSH with the number of hash table vary.
+</p>
+
+|GIST1M|table_num|key_size|build_index_time|query_time|recall|touched|proportion|
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| |14| 6 | - | - |  |  |  |
-| |16| 6  | - | - | - | | |
-| |20| 6 | - | - | - | | |
-| |12| 6  | - | - | - | | |
-| |12| 8 | - | - | - | | |
-| |12| 12  | - | - | - | | |
+| |6|14 | 359.06 s | 1.29 s | 34.4% | 9.88% | 3.269 |
+| |6|16  | 502.13 s  | 3.946 s | 41.2% | 17.57%|2.35 |
+| |6| 12 | 407.17 s | 6.67 s | 58.35% |  30.40%| 1.92|
+| |8| 12  | 564.53 s | 5.57 s | 60.25% | 24.74%| 2.43|
 
+<p align="center">
+    <img src="https://ooo.0o0.ooo/2017/04/10/58eb9f1e726a6.png" width="640">
+</p>
+<p align="center" style="color:rgb(220,220,220);">
+    Figure 5: GIST1M dataset using LSH with the size of key varies.
+</p>
+
+<p align="center">
+    <img src="https://ooo.0o0.ooo/2017/04/10/58eb9f1e6b466.png" width="640">
+</p>
+<p align="center" style="color:rgb(220,220,220);">
+    Figure 6: GIST1M dataset using LSH with the number of hash table vary.
+</p>
 
 ## lsh原理
 

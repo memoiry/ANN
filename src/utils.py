@@ -1,9 +1,12 @@
 import numpy as np
 def vecs_read(filename, c_contiguous=True):
 	temp = filename.split('.')
-	if temp[1] == 'fvecs':
+	print 'tes'
+	if temp[-1] == 'fvecs':
+		print 1
 		fv = np.fromfile(filename, dtype=np.float32)
 	else:
+		print 2
 		fv = np.fromfile(filename, dtype=np.int32)
 	if fv.size == 0:
 		return np.zeros((0, 0))

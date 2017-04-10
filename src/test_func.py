@@ -88,12 +88,18 @@ def sift_test():
 
 def gist_exp():
 	query_num = 20
-	dataset = vecs_read('../data/gist/gist_base.fvecs')
-	query = vecs_read('../data/gist/gist_query.fvecs')
+	#dataset = vecs_read('../data/gist/gist_base.fvecs')
+	#query = vecs_read('../data/gist/gist_query.fvecs')
+	print 3
+	dataset = vecs_read('/volumes/seagate backup plus drive/gist/gist_base.fvecs')
+	query = vecs_read('/volumes/seagate backup plus drive/gist/gist_query.fvecs')
+	#query = query[:1000]
+	ground_truth = vecs_read('/volumes/seagate backup plus drive/gist/gist_groundtruth.ivecs')
+
 	num = query.shape[0]
 	rand_index = np.random.randint(0,num,size=(query_num))
 	query = query[rand_index]
-	ground_truth = vecs_read('../data/gist/gist_groundtruth.ivecs')
+	#ground_truth = vecs_read('../data/gist/gist_groundtruth.ivecs')
 	ground_truth = ground_truth[rand_index]
 	k_num = 100
 	k = [14,16]
@@ -154,11 +160,12 @@ def sift_exp():
 
 def test_pyflann_sift():
 	dataset = vecs_read('../data/sift/sift_base.fvecs')
+	#print dataset
 	query = vecs_read('../data/sift/sift_query.fvecs')
 	#query = query[:1000]
 	ground_truth = vecs_read('../data/sift/sift_groundtruth.ivecs')
 	#ground_truth = ground_truth[:1000]
-	k_num = 100
+	k_num = 5
 	flan = pyflann.FLANN()
 	tree = [1,2,4,8,16,20,50]
 	print "tree_num\trecall\tbuild_time\tsearch_time"
@@ -178,10 +185,16 @@ def test_pyflann_sift():
 		print tree_num,'\t','{} %'.format(acc),'\t',tim1,'\t',tim
 
 def test_pyflann_gist():
-	dataset = vecs_read('../data/gist/gist_base.fvecs')
-	query = vecs_read('../data/gist/gist_query.fvecs')
+	#dataset = vecs_read('../data/gist/gist_base.fvecs')
+	#query = vecs_read('../data/gist/gist_query.fvecs')
 	#query = query[:1000]
-	ground_truth = vecs_read('../data/gist/gist_groundtruth.ivecs')
+	#ground_truth = vecs_read('../data/gist/gist_groundtruth.ivecs')
+
+	dataset = vecs_read('/volumes/seagate backup plus drive/gist/gist_base.fvecs')
+	query = vecs_read('/volumes/seagate backup plus drive/gist/gist_query.fvecs')
+	#query = query[:1000]
+	ground_truth = vecs_read('/volumes/seagate backup plus drive/gist/gist_groundtruth.ivecs')
+
 	#ground_truth = ground_truth[:1000]
 	k_num = 100
 	flan = pyflann.FLANN()
