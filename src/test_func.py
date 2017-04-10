@@ -88,11 +88,11 @@ def sift_test():
 
 def gist_exp():
 	query_num = 20
-	#dataset = vecs_read('../data/gist/gist_base.fvecs')
-	#query = vecs_read('../data/gist/gist_query.fvecs')
+	dataset = vecs_read('../data/gist/gist_base.fvecs')
+	query = vecs_read('../data/gist/gist_query.fvecs')
 	print 3
-	dataset = vecs_read('/volumes/seagate backup plus drive/gist/gist_base.fvecs')
-	query = vecs_read('/volumes/seagate backup plus drive/gist/gist_query.fvecs')
+	#dataset = vecs_read('/volumes/seagate backup plus drive/gist/gist_base.fvecs')
+	#query = vecs_read('/volumes/seagate backup plus drive/gist/gist_query.fvecs')
 	#query = query[:1000]
 	ground_truth = vecs_read('/volumes/seagate backup plus drive/gist/gist_groundtruth.ivecs')
 
@@ -185,15 +185,15 @@ def test_pyflann_sift():
 		print tree_num,'\t','{} %'.format(acc),'\t',tim1,'\t',tim
 
 def test_pyflann_gist():
-	#dataset = vecs_read('../data/gist/gist_base.fvecs')
-	#query = vecs_read('../data/gist/gist_query.fvecs')
+	dataset = vecs_read('../data/gist/gist_base.fvecs')
+	query = vecs_read('../data/gist/gist_query.fvecs')
 	#query = query[:1000]
-	#ground_truth = vecs_read('../data/gist/gist_groundtruth.ivecs')
+	ground_truth = vecs_read('../data/gist/gist_groundtruth.ivecs')
 
-	dataset = vecs_read('/volumes/seagate backup plus drive/gist/gist_base.fvecs')
-	query = vecs_read('/volumes/seagate backup plus drive/gist/gist_query.fvecs')
+	#dataset = vecs_read('/volumes/seagate backup plus drive/gist/gist_base.fvecs')
+	#query = vecs_read('/volumes/seagate backup plus drive/gist/gist_query.fvecs')
 	#query = query[:1000]
-	ground_truth = vecs_read('/volumes/seagate backup plus drive/gist/gist_groundtruth.ivecs')
+	#ground_truth = vecs_read('/volumes/seagate backup plus drive/gist/gist_groundtruth.ivecs')
 
 	#ground_truth = ground_truth[:1000]
 	k_num = 100
