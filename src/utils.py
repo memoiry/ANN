@@ -1,5 +1,4 @@
 import numpy as np
-
 def vecs_read(filename, c_contiguous=True):
 	temp = filename.split('.')
 	if temp[1] == 'fvecs':

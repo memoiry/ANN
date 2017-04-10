@@ -1,33 +1,56 @@
 # flann_lsh
-benchmark for local sensitive hash and kdtree method in flann.
+Benchmark for p-stable local sensitive hash and kdtree method in flann.
+
+A matlab interface is implemented.
 
 ## Usage
 
-* Download the code from github.
+### Experiment of pyflann-kdtree and p-stable LSH
+
+* Install Pyflann and download the source code from github.
 
 ```bash
+pip install pyflann
 git clone https://github.com/memoiry/flann_lsh
-cd flann_lsh
 ```
 
 * Put the sift and gist data in the code folder and run the command below.
 
 ```bash
-python examples.py
+cd flann_lsh/src
+python run_exp.py
 ```
 
-## 2. Result
+### Matlab Interface 
 
-### $flann-KDTree$
+#### Example
 
-|SIFT|trees_num|build_index_time|query_time_1000|recall|
+```matlab
+dataset = randn(10000,100);
+query = randn(100,100);
+k = 10;
+table_num = 8;
+key_size = 12;
+[ground_truth, ground_truth_dists] = knnsearch(dataset,Y,'K',k);
+result, dists = lsh_search(dataset,query,k,table_num,key_size);
+acc = recall(result, ground_truth, k)
+```
+
+## Result
+
+### pyflann-KDTree
+
+With each case tested tree times, I obtained the average result as below.
+
+|SIFT|trees_num|build_index_time|query_time|recall|
 | --- | --- | --- | --- | --- |
-| |1| - | - | - |
-| |2| - | - | - |
-| |4| - | - | - |
-| |8| - | - | - |
-| |12| - | - | - |
-| |18| - | - | - |
+| |1| 2.185s|0.639s|14.926% | 
+| |2| 4.11s|0.68s|17.35% | 
+| |4| 8.21s|0.72s|19.324% | 
+| |8| 17.01s|0.79s|21.134% |
+| |16| 33.07s|1.28s|23.128% |
+| |20| 40.68s|0.94s|23.714% | 
+| |50|100.87s|9.31s|24.798%|
 
 |GIST|table_number|build_index_time|query_time_1000|recall|
 | --- | --- | --- | --- | --- |
@@ -38,17 +61,19 @@ python examples.py
 | |12| - | - | - |
 | |18| - | - | - |
 
-### 2.2 $p-stable \ LSH$
+### p-stable LSH
 
 Let k = 100, select 20 query randomly from the query data set and obtain the average time for computing the index, recall, touched, recall/touched.
 
+With each case tested tree times, I obtained the average result as below.
+
 |SIFT|table_num|key|build_index_time|query_time|recall|touched|proportion|
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| |14| 6 | 357.82s | 0.654s | 52.2% | 3.8% | 13.71 |
-| |16| 6  | 404.68s | 0.657s | 51.85% |3.92% | 13.19|
-| |20| 6 | 511.31s | 1.502s | 30.05% | 0.72%| 41.99|
-| |12| 6  | 327.57s | 1.213s | 59.8% | 6.95%|  8.60|
-| |12| 8 | 439.08s | 1.048s | 67.85% | 5.82%| 11.65|
+| |6| 14 | 357.82s | 0.654s | 52.2% | 3.8% | 13.71 |
+| |6| 16  | 404.68s | 0.657s | 51.85% |3.92% | 13.19|
+| |6| 20 | 511.31s | 1.502s | 30.05% | 0.72%| 41.99|
+| |6| 12  | 327.57s | 1.213s | 59.8% | 6.95%|  8.60|
+| |8| 12 | 439.08s | 1.048s | 67.85% | 5.82%| 11.65|
 | |12| 12  | 662.57s | 1.743s | 83.25% | 9.74%| 8.54|
 
 |GIST|table_num|key_size|build_index_time|query_time|recall|touched|proportion|

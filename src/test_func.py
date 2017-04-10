@@ -1,5 +1,6 @@
 from utils import *
 import numpy as np
+from tester import *
 
 def random_test():
 	dataset = np.random.randn(10000,100)*100
@@ -58,11 +59,11 @@ def random__test():
 
 def sift_test():
 	#global query, k_num, lsh, ground_truth
-	dataset = vecs_read('sift_base.fvecs')
+	dataset = vecs_read('../data/sift/sift_base.fvecs')
 	#dataset = dataset[:500000]
-	query = vecs_read('sift_query.fvecs')
+	query = vecs_read('../data/sift/sift_query.fvecs')
 	query = query[:20]
-	ground_truth = vecs_read('sift_groundtruth.ivecs')
+	ground_truth = vecs_read('../data/sift/sift_groundtruth.ivecs')
 	ground_truth = ground_truth[:100]
 	print query.shape
 	k_num = 50
@@ -85,20 +86,19 @@ def sift_test():
 	#result, dists = lsh.query(query, k_num)
 	#print recall(result, ground_truth, k_num)
 
-
-def sift_exp():
+def gist_exp():
 	query_num = 20
-	dataset = vecs_read('sift_base.fvecs')
-	query = vecs_read('sift_query.fvecs')
+	dataset = vecs_read('../data/gist/gist_base.fvecs')
+	query = vecs_read('../data/gist/gist_query.fvecs')
 	num = query.shape[0]
 	rand_index = np.random.randint(0,num,size=(query_num))
 	query = query[rand_index]
-	ground_truth = vecs_read('sift_groundtruth.ivecs')
+	ground_truth = vecs_read('../data/gist/gist_groundtruth.ivecs')
 	ground_truth = ground_truth[rand_index]
 	k_num = 100
-	k = [14,16,20]
-	L = [6,8,12]
-	trees_num = [1,2,4,8,16]
+	k = [14,16]
+	L = [6,8]
+	#trees_num = [1,2,4,8,16]
 	k_standard = 12
 	L_standard = 6
 	w_standard = 9
@@ -119,24 +119,89 @@ def sift_exp():
 	#	tester = Tester(k_standard, L_standard, w_standard, trees_num_, dataset, query, k_num, ground_truth)
 	#	lsh_result.append(tester.run())
 
-def test_pyflann():
-	dataset = vecs_read('sift_base.fvecs')
-	query = vecs_read('sift_query.fvecs')
+def sift_exp():
+	query_num = 20
+	dataset = vecs_read('../data/sift/sift_base.fvecs')
+	query = vecs_read('../data/sift/sift_query.fvecs')
+	num = query.shape[0]
+	rand_index = np.random.randint(0,num,size=(query_num))
+	query = query[rand_index]
+	ground_truth = vecs_read('../data/sift/sift_groundtruth.ivecs')
+	ground_truth = ground_truth[rand_index]
+	k_num = 100
+	k = [14,16,20]
+	L = [6,8,12]
+	#trees_num = [1,2,4,8,16]
+	k_standard = 12
+	L_standard = 6
+	w_standard = 9
+	trees_num_standard = 4
+	lsh_result = []
+	for k_ in k:
+		tester = Tester(k_, L_standard, w_standard, trees_num_standard, dataset, query, k_num, ground_truth)
+		lsh_result.append(tester.run())
+	for L_ in L:
+		tester = Tester(k_standard, L_, w_standard, trees_num_standard, dataset, query, k_num, ground_truth)
+		lsh_result.append(tester.run())
+	#for w_ in L:
+	#	tester = Tester(k_standard, L_standard, w_, trees_num_standard, dataset, query, k_num, ground_truth)
+	#	lsh_result.append(tester.run())
+	lsh_result = np.array(lsh_result)
+	np.savetxt("result.csv", lsh_result, delimiter = ",")
+	#for trees_num_ in trees_num:
+	#	tester = Tester(k_standard, L_standard, w_standard, trees_num_, dataset, query, k_num, ground_truth)
+	#	lsh_result.append(tester.run())
+
+def test_pyflann_sift():
+	dataset = vecs_read('../data/sift/sift_base.fvecs')
+	query = vecs_read('../data/sift/sift_query.fvecs')
 	#query = query[:1000]
-	ground_truth = vecs_read('sift_groundtruth.ivecs')
+	ground_truth = vecs_read('../data/sift/sift_groundtruth.ivecs')
 	#ground_truth = ground_truth[:1000]
 	k_num = 100
 	flan = pyflann.FLANN()
-	tree = [1,2,4,8,16,20]
-	print "tree_num\trecall"
+	tree = [1,2,4,8,16,20,50]
+	print "tree_num\trecall\tbuild_time\tsearch_time"
 	for tree_num in tree:
 		#print "building the index"
+		start = dt.datetime.now()
 		params = flan.build_index(dataset, algorithm = "kdtree", trees = tree_num)
+		end = dt.datetime.now()
+		tim1 = (end-start).total_seconds()
 		#print params
 		#print "index built"
+		start = dt.datetime.now()
 		result, dists = flan.nn_index(query, k_num)
+		end = dt.datetime.now()
+		tim = (end-start).total_seconds()
 		acc = recall(result, ground_truth, k_num)
-		print tree_num, ' ',' ','{} %'.format(acc)
+		print tree_num,'\t','{} %'.format(acc),'\t',tim1,'\t',tim
+
+def test_pyflann_gist():
+	dataset = vecs_read('../data/gist/gist_base.fvecs')
+	query = vecs_read('../data/gist/gist_query.fvecs')
+	#query = query[:1000]
+	ground_truth = vecs_read('../data/gist/gist_groundtruth.ivecs')
+	#ground_truth = ground_truth[:1000]
+	k_num = 100
+	flan = pyflann.FLANN()
+	tree = [1,2,4,8,16,20,50]
+	print "tree_num\trecall\tbuild_time\tsearch_time"
+	for tree_num in tree:
+		#print "building the index"
+		start = dt.datetime.now()
+		params = flan.build_index(dataset, algorithm = "kdtree", trees = tree_num)
+		end = dt.datetime.now()
+		tim1 = (end-start).total_seconds()
+		#print params
+		#print "index built"
+		start = dt.datetime.now()
+		result, dists = flan.nn_index(query, k_num)
+		end = dt.datetime.now()
+		tim = (end-start).total_seconds()
+		acc = recall(result, ground_truth, k_num)
+		print tree_num,'\t','{} %'.format(acc),'\t',tim1,'\t',tim
+
 
 def test_lsh():
 	dataset = vecs_read('sift_base.fvecs')

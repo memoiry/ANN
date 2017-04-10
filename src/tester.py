@@ -8,10 +8,9 @@ import cProfile
 import pstats  
 import math
 import utils
-from utils import *
-from test_func import *
-#E2LSH_BIGPRIMENUM = 4294967291
-#MAX_HASHRAND = 536870912
+#from lshash import LSHash
+E2LSH_BIGPRIMENUM = 4294967291
+MAX_HASHRAND = 536870912
 
 class PLSH:
 
@@ -33,14 +32,17 @@ class PLSH:
 		times = len(self.hash_tables)
 		count = 0
 		#build index
+		flag = 0
 		for inde, (hash_funcs, table) in enumerate(self.hash_tables):
 			for ix, p in enumerate(dataset):
 				count = count + 1
-				progress = float(count) / (num * times) * 100
+				progress = float(count) / (num*times) * 100
+				#if int(progress) > flag:
+				#	flag += 1
+				#	sys.stdout.writelines(str(progress) + "%" + '\r')
 				sys.stdout.writelines(str(progress) + "%" + '\r')
 				table[self.hash(hash_funcs, p, inde)].append(ix)
 		#print ' '
-
 	def build_hash_family(self):
 		hash_family = []
 		for i in range(self.L):
@@ -231,7 +233,7 @@ class Tester:
 		#self.print_result(kdtree_results)
 
 		#lsh results
-		print("  a) LSH with l2-norm metrics, k: {}, L: {}, w: {}".format(self.k, self.L, self.w))
+		print(" LSH with l2-norm metrics, k: {}, L: {}".format(self.k, self.L))
 		lsh_results = []
 		start = dt.datetime.now()
 		self.lsh.build_index(self.dataset)
