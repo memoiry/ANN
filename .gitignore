@@ -1,2 +1,5 @@
-data/sift/
-data/gist/
+data/sift/*.fvecs
+data/sift/*.ivecs
+data/gist/*.fvecs
+data/gist/*.ivecs
+data/gist/*.gz
