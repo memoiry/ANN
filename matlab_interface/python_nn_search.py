@@ -1,6 +1,5 @@
-from ../src/tester import *
-from ../src/utils import *
-from ../src/test_func import *
+from tester import *
+from utils import *
 import sys
 
 

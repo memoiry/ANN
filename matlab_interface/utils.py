@@ -1,7 +1,7 @@
 import numpy as np
 def vecs_read(filename, c_contiguous=True):
 	temp = filename.split('.')
-	#print 'tes'
+	print 'tes'
 	if temp[-1] == 'fvecs':
 		print 1
 		fv = np.fromfile(filename, dtype=np.float32)

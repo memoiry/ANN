@@ -3,3 +3,5 @@ data/sift/*.ivecs
 data/gist/*.fvecs
 data/gist/*.ivecs
 data/gist/*.gz
+src/*.pyc
+src/*_.py
