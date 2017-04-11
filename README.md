@@ -31,6 +31,18 @@ python analysis.py
 ### PLSH class usage
 
 
+PLSH is a class used to create a local sensitive hash object.
+
+* PLSH(key_size, table_num, w)
+
+When the lsh object is constructed, simply build the index using the training dataset.
+
+* lsh.build_index(dataset)
+
+Last, search the ann result for query dataset.
+
+* lsh.query(testset, k)
+
 ```python
 from tester import *
 from utils import *
