@@ -11,4 +11,4 @@ if __name__ == '__main__':
 	print ' c)  ANN_GIST1M dataset using p-stable LSH algorithm'
 	gist_exp()
 	print ' d)  ANN_GIST1M dataset using flann-kdtree algorithm'
-	test_pyflann_gift()
+	test_pyflann_gist()
