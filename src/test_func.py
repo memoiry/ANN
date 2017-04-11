@@ -94,12 +94,12 @@ def gist_exp():
 	#dataset = vecs_read('/volumes/seagate backup plus drive/gist/gist_base.fvecs')
 	#query = vecs_read('/volumes/seagate backup plus drive/gist/gist_query.fvecs')
 	#query = query[:1000]
-	ground_truth = vecs_read('/volumes/seagate backup plus drive/gist/gist_groundtruth.ivecs')
+	#ground_truth = vecs_read('/volumes/seagate backup plus drive/gist/gist_groundtruth.ivecs')
 
 	num = query.shape[0]
 	rand_index = np.random.randint(0,num,size=(query_num))
 	query = query[rand_index]
-	#ground_truth = vecs_read('../data/gist/gist_groundtruth.ivecs')
+	ground_truth = vecs_read('../data/gist/gist_groundtruth.ivecs')
 	ground_truth = ground_truth[rand_index]
 	k_num = 100
 	k = [14,16]

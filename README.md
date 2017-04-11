@@ -7,21 +7,22 @@ A matlab interface is implemented.
 
 ### Experiment of pyflann-kdtree and p-stable LSH
 
-Install Pyflann and download the source code from github.
+Install Pyflann, Seaborn, and download the source code from github.
 
 ```bash
 pip install pyflann
+pip install seaborn
 git clone https://github.com/memoiry/flann_lsh
 ```
 
-Put the sift and gist data in the code folder and run the command below.
+Put the sift and gist data in the corresponding data folder and run the command below.
 
 ```bash
 cd flann_lsh/src
 python run_exp.py
 ```
 
-Generate the result figure.
+To generate the result figure, run the command below. The analysis will be put in figure folder.
 
 ```bash
 python analysis.py
@@ -31,6 +32,9 @@ python analysis.py
 
 
 ```python
+from tester import *
+from utils import *
+
 dataset = np.random.randn(10000,100)*100
 testset = np.random.randn(100,100)*10000
 w = 4
@@ -55,6 +59,11 @@ for k in k_set:
 ### Matlab Interface 
 
 #### Example
+
+
+lsh_search is a simple wrapper function used to call Python PLSH implementation from command line for MATLAB. 
+
+* lsh_search(dataset,query,k,table_num,key_size)
 
 ```matlab
 dataset = randn(10000,100);
