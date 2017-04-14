@@ -56,7 +56,6 @@ def random__test():
 			print k, L, ' ',' ','{} %   {} %'.format(acc,candi_avg), ' ', ' ', prop
 
 
-
 def sift_test():
 	#global query, k_num, lsh, ground_truth
 	dataset = vecs_read('../data/sift/sift_base.fvecs')
@@ -158,6 +157,7 @@ def sift_exp():
 	#	tester = Tester(k_standard, L_standard, w_standard, trees_num_, dataset, query, k_num, ground_truth)
 	#	lsh_result.append(tester.run())
 
+
 def test_pyflann_sift():
 	dataset = vecs_read('../data/sift/sift_base.fvecs')
 	#print dataset
@@ -165,55 +165,65 @@ def test_pyflann_sift():
 	#query = query[:1000]
 	ground_truth = vecs_read('../data/sift/sift_groundtruth.ivecs')
 	#ground_truth = ground_truth[:1000]
-	k_num = 5
-	flan = pyflann.FLANN()
-	tree = [1,2,4,8,16,20,50]
-	print "tree_num\trecall\tbuild_time\tsearch_time"
+	k_num = 100
+	tree = [1,4,8,16]
+	checks_set = [16,32,64,128]
+	res = []
+	print "tree_num\tchecks\trecall\tbuild_time\tsearch_time"
 	for tree_num in tree:
-		#print "building the index"
-		start = dt.datetime.now()
-		params = flan.build_index(dataset, algorithm = "kdtree", trees = tree_num)
-		end = dt.datetime.now()
-		tim1 = (end-start).total_seconds()
-		#print params
-		#print "index built"
-		start = dt.datetime.now()
-		result, dists = flan.nn_index(query, k_num)
-		end = dt.datetime.now()
-		tim = (end-start).total_seconds()
-		acc = recall(result, ground_truth, k_num)
-		print tree_num,'\t','{} %'.format(acc),'\t',tim1,'\t',tim
+		for check in checks_set:
+			flan = pyflann.FLANN(algorithm = "kdtree", trees = tree_num, checks = check)
+			#print "building the index"
+			start = dt.datetime.now()
+			params = flan.build_index(dataset)
+			end = dt.datetime.now()
+			tim1 = (end-start).total_seconds()
+			#print params
+			#print "index built"
+			start = dt.datetime.now()
+			result, dists = flan.nn_index(query, k_num)
+			end = dt.datetime.now()
+			tim = (end-start).total_seconds()
+			acc = recall(result, ground_truth, k_num)
+			res.append([tree_num,check,acc,tim1,tim])
+			print tree_num,'\t',check,'\t','{} %'.format(acc),'\t',tim1,'\t',tim
+	np.savetxt('SIFT1M_FLANN.csv',np.array(res),delimiter = ",")
 
 def test_pyflann_gist():
-	dataset = vecs_read('../data/gist/gist_base.fvecs')
-	query = vecs_read('../data/gist/gist_query.fvecs')
+	#dataset = vecs_read('../data/gist/gist_base.fvecs')
+	#query = vecs_read('../data/gist/gist_query.fvecs')
 	#query = query[:1000]
-	ground_truth = vecs_read('../data/gist/gist_groundtruth.ivecs')
+	#ground_truth = vecs_read('../data/gist/gist_groundtruth.ivecs')
 
-	#dataset = vecs_read('/volumes/seagate backup plus drive/gist/gist_base.fvecs')
-	#query = vecs_read('/volumes/seagate backup plus drive/gist/gist_query.fvecs')
+	dataset = vecs_read('/volumes/seagate backup plus drive/gist/gist_base.fvecs')
+	query = vecs_read('/volumes/seagate backup plus drive/gist/gist_query.fvecs')
 	#query = query[:1000]
-	#ground_truth = vecs_read('/volumes/seagate backup plus drive/gist/gist_groundtruth.ivecs')
+	ground_truth = vecs_read('/volumes/seagate backup plus drive/gist/gist_groundtruth.ivecs')
 
 	#ground_truth = ground_truth[:1000]
-	k_num = 100
-	flan = pyflann.FLANN()
-	tree = [1,2,4,8,16,20,50]
-	print "tree_num\trecall\tbuild_time\tsearch_time"
+	k_num = 5
+	tree = [1,4,8]
+	checks_set = [32,64,128]
+	res = []
+	print "tree_num\tchecks\trecall\tbuild_time\tsearch_time"
 	for tree_num in tree:
-		#print "building the index"
-		start = dt.datetime.now()
-		params = flan.build_index(dataset, algorithm = "kdtree", trees = tree_num)
-		end = dt.datetime.now()
-		tim1 = (end-start).total_seconds()
-		#print params
-		#print "index built"
-		start = dt.datetime.now()
-		result, dists = flan.nn_index(query, k_num)
-		end = dt.datetime.now()
-		tim = (end-start).total_seconds()
-		acc = recall(result, ground_truth, k_num)
-		print tree_num,'\t','{} %'.format(acc),'\t',tim1,'\t',tim
+		for check in checks_set:
+			flan = pyflann.FLANN(algorithm = "kdtree", trees = tree_num, checks = check)
+			#print "building the index"
+			start = dt.datetime.now()
+			params = flan.build_index(dataset)
+			end = dt.datetime.now()
+			tim1 = (end-start).total_seconds()
+			#print params
+			#print "index built"
+			start = dt.datetime.now()
+			result, dists = flan.nn_index(query, k_num)
+			end = dt.datetime.now()
+			tim = (end-start).total_seconds()
+			acc = recall(result, ground_truth, k_num)
+			res.append([tree_num,check,acc,tim1,tim])
+			print tree_num,'\t',check,'\t','{} %'.format(acc),'\t',tim1,'\t',tim
+	np.savetxt('GIST1M_FLANN.csv',np.array(res),delimiter = ",")
 
 
 def test_lsh():
@@ -246,3 +256,129 @@ def test_lsh():
 	result = np.array(result)
 	acc = recall(result,ground_truth ,k_num)
 	print acc
+
+def exp_flann_sift():
+	dataset = vecs_read('../data/sift/sift_base.fvecs')
+	#print dataset
+	query = vecs_read('../data/sift/sift_query.fvecs')
+	#query = query[:1000]
+	ground_truth = vecs_read('../data/sift/sift_groundtruth.ivecs')
+	#ground_truth = ground_truth[:1000]
+	tree_num = 16
+	target_recall = 92
+	res = []
+	checks = k_num
+	print "tree_num\tchecks\trecall\tQueries per second"
+	recall_ = 0
+	checks = k_num
+	flan = pyflann.FLANN(algorithm = "kdtree", trees = tree_num, checks = checks)
+	params = flan.build_index(dataset)
+	query_num = query.shape[0]
+	count = 0
+	while recall_ < target_recall:
+		count = count + 1
+		start = dt.datetime.now()
+		result, dists = flan.nn_index(query, k_num, checks = checks)
+		end = dt.datetime.now()
+		tim = (end-start).total_seconds()
+		tim = query_num/tim
+		recall_ = recall(result, ground_truth, k_num)
+		res.append((recall_,tim))
+		checks = checks + 3 * count
+		print tree_num,'\t{}\t{} %\t{}'.format(checks,recall_,tim)
+	np.savetxt('SIFT1M_FLANN.csv',np.array(res),delimiter = ",")
+
+def exp_flann_gist():
+	#dataset = vecs_read('../data/gist/gist_base.fvecs')
+	#query = vecs_read('../data/gist/gist_query.fvecs')
+	#ground_truth = vecs_read('../data/gist/gist_groundtruth.ivecs')
+	dataset = vecs_read('/volumes/seagate backup plus drive/gist/gist_base.fvecs')
+	query = vecs_read('/volumes/seagate backup plus drive/gist/gist_query.fvecs')
+	query = query[:20]
+	ground_truth = vecs_read('/volumes/seagate backup plus drive/gist/gist_groundtruth.ivecs')
+	k_num = 20
+	tree_num = 16
+	target_recall = 92
+	res = []
+	checks = k_num
+	print "tree_num\tchecks\trecall\tQueries per second"
+	recall_ = 0
+	checks = k_num
+	flan = pyflann.FLANN(algorithm = "kdtree", trees = tree_num, checks = checks)
+	params = flan.build_index(dataset)
+	query_num = query.shape[0]
+	count = 0
+	while recall_ < target_recall:
+		count = count + 1
+		start = dt.datetime.now()
+		result, dists = flan.nn_index(query, k_num, checks = checks)
+		end = dt.datetime.now()
+		tim = (end-start).total_seconds()
+		tim = query_num/tim
+		recall_ = recall(result, ground_truth, k_num)
+		res.append((recall_,tim))
+		checks = checks + 8 * count
+		print tree_num,'\t{}\t{} %\t{}'.format(checks,recall_,tim)
+	np.savetxt('GIST1M_FLANN.csv',np.array(res),delimiter = ",")
+
+def exp_lsh_sift():
+	query_num = 10
+	dataset = vecs_read('../data/sift/sift_base.fvecs')
+	query = vecs_read('../data/sift/sift_query.fvecs')
+	num = query.shape[0]
+	rand_index = np.random.randint(0,num,size=(query_num))
+	query = query[rand_index]
+	ground_truth = vecs_read('../data/sift/sift_groundtruth.ivecs')
+	ground_truth = ground_truth[rand_index]
+	k_num = 20
+	w=1
+	k_set = [8,12,16]
+	L_set = [1,2,4,8,12]
+	res = []
+	print 'k\tL\trecall\tQueries per second'
+	for L in L_set:
+		for k in k_set:
+			lsh =  PLSH(k,L,w)
+			lsh.build_index(dataset)
+			start = dt.datetime.now()
+			result, dists, candi_avg = lsh.query(query, k_num)
+			end = dt.datetime.now()
+			tim = (end-start).total_seconds()
+			tim = query_num/tim
+			acc = recall(result, ground_truth, k_num)
+			res.append((acc, tim))
+			print '{}\t{}\t{}\t{}'.format(k,L,acc,tim)
+	np.savetxt("SIFT1M_LSH.csv", res, delimiter = ",")
+
+
+def exp_lsh_gist():
+	#dataset = vecs_read('../data/gist/gist_base.fvecs')
+	#query = vecs_read('../data/gist/gist_query.fvecs')
+	#ground_truth = vecs_read('../data/gist/gist_groundtruth.ivecs')
+	dataset = vecs_read('/volumes/seagate backup plus drive/gist/gist_base.fvecs')
+	query = vecs_read('/volumes/seagate backup plus drive/gist/gist_query.fvecs')
+	ground_truth = vecs_read('/volumes/seagate backup plus drive/gist/gist_groundtruth.ivecs')
+	query_num = 10
+	num = query.shape[0]
+	rand_index = np.random.randint(0,num,size=(query_num))
+	query = query[rand_index]
+	ground_truth = ground_truth[rand_index]
+	k_num = 20
+	k_set = [8,12,16]
+	L_set = [1,2,4,8,12]
+	res = []
+	print 'k\tL\trecall\tQueries per second'
+	for L in L_set:
+		for k in k_set:
+			lsh =  PLSH(k,L,1)
+			lsh.build_index(dataset)
+			start = dt.datetime.now()
+			result, dists, candi_avg = lsh.query(query, k_num)
+			end = dt.datetime.now()
+			tim = (end-start).total_seconds()
+			tim = query_num/tim
+			acc = recall(result, ground_truth, k_num)
+			res.append((acc, tim))
+			print '{}\t{}\t{}\t{}'.format(k,L,acc,tim)
+	np.savetxt("GIST1M_LSH.csv", res, delimiter = ",")
+

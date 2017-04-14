@@ -2,6 +2,7 @@ import seaborn as sns
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import os.path
 
 def get_flann_sift_result():
 	tree_n = [1,2,4,8,16,20,50]
@@ -148,15 +149,76 @@ def linear_plot(k, L, build_index_time, search_time, recall, touched, proportion
 	plt.savefig('figure/{}_k_proportion_lsh.png'.format(datatype))
 	plt.close(0)
 
+def kdtree_plot(kdtree_result, datatype):
+	df = pd.DataFrame(kdtree_result, columns = ['tree_num',
+		'checks', 'recall', 'build_time', 'search_time'])
+	df['tree_num'] = df['tree_num'].astype(np.int32)
+	df['checks'] = df['checks'].astype(np.int32)
+	plt.figure(figsize=(15, 30))
+	sns.lmplot(x="checks", y="recall", hue="tree_num", data=df);
+	plt.savefig('figure/{}_kdtree_recall.png'.format(datatype))
+	plt.close(0)
+	plt.figure(figsize=(15, 30))
+	sns.lmplot(x="checks", y="build_time", hue="tree_num", data=df);
+	plt.savefig('figure/{}_kdtree_build_time.png'.format(datatype))
+	plt.close(0)
+	plt.figure(figsize=(15, 30))
+	sns.lmplot(x="checks", y="search_time", hue="tree_num", data=df);
+	plt.savefig('figure/{}_kdtree_search_time.png'.format(datatype))
+	plt.close(0)
+
+def plot_single_v2(result, datatype):
+	plt.figure(figsize=(15, 30))
+	result = np.copy(result)
+	result[:,0] = result[:,0] / 100
+	df = pd.DataFrame(result, columns = ['recall', 'Queries_per_second'])		
+	fgrid = sns.lmplot(x="recall", y="Queries_per_second", data=df,
+           fit_reg=False,ci=None, scatter_kws={"s": 80});
+	fgrid.set(yscale="log")
+	plt.savefig('figure/{}_kdtree.png'.format(datatype))
+	plt.close(0)
+
+def plot_v2(kdtree_sift, lsh_sift, datatype):
+	num = kdtree_sift.shape[0]
+	num_lsh = lsh_sift.shape[0]	
+	temp = np.zeros((num+num_lsh, 3))
+	temp[:,:2] = np.concatenate((kdtree_sift, lsh_sift),axis = 0)
+	temp[:num,2] = 1
+	temp[num:,2] = 2
+	df = pd.DataFrame(temp, columns = ['recall', 'Queries_per_second','algorithms'])	
+	df['algorithms'][df['algorithms'] == 1] = 'FLANN-KDTREE'
+	df['algorithms'][df['algorithms'] == 2] = 'LSH'
+	#print df
+	plt.figure()
+	fgrid = sns.lmplot(x="recall", y="Queries_per_second", hue='algorithms',data=df,
+			fit_reg=False, ci=None, scatter_kws={"s": 80},legend=False);
+	axes = fgrid.axes
+	fgrid.despine(left=True)
+	plt.legend(loc='upper left')
+	fgrid.set(yscale="log")
+	axes[0,0].set_ylim(1e-2,1e5)
+	plt.savefig('figure/{}_benchmark.png'.format(datatype))
+	plt.close(0)
+
+def test_():
+	kdtree_sift = np.loadtxt('SIFT1M_FLANN.csv', delimiter=',')
+	kdtree_sift[:,1] = 10000/kdtree_sift[:,1]
+	kdtree_result=kdtree_sift
+	plot_single_v2(kdtree_result,'SIFT')
+
 if __name__ == '__main__':
-	# analysis of flann's kdtree in SIFT1M
-	tree_num, build_index_time, search_time, recall = get_flann_sift_result()
-	box_plot(tree_num, build_index_time, search_time, recall, 'SIFT1M')
-	tree_num, build_index_time, search_time, recall = get_flann_gist_result()
-	box_plot(tree_num, build_index_time, search_time, recall, 'GIST1M')
-	k, L, build_index_time, search_time, recall, touched, proportion = get_lsh_sift_result()
-	linear_plot(k, L, build_index_time, search_time, recall, touched, proportion, 'SIFT1M')
-	k, L, build_index_time, search_time, recall, touched, proportion = get_lsh_gist_result()
-	linear_plot(k, L, build_index_time, search_time, recall, touched, proportion, 'GIST1M')
-
-
+	#test_()
+	datatype = ['SIFT','GIST']
+	for i in datatype:
+		kdtree_sift = np.loadtxt('%s1M_FLANN.csv' % (i), delimiter=',')
+		lsh_sift = np.loadtxt('%s1M_LSH.csv' % (i), delimiter=',')
+		plot_v2(kdtree_sift, lsh_sift, i)
+	#fname = 'GIST1M_FLANN.csv'
+	#if not os.path.isfile(fname):
+	#	test_pyflann_gist()
+	#kdtree_sift= np.loadtxt('GIST1M_FLANN.csv', delimiter=',')
+	#kdtree_plot(kdtree_sift,'GIST')
+	#k, L, build_index_time, search_time, recall, touched, proportion = get_lsh_sift_result()
+	#linear_plot(k, L, build_index_time, search_time, recall, touched, proportion, 'SIFT1M')
+	#k, L, build_index_time, search_time, recall, touched, proportion = get_lsh_gist_result()
+	#linear_plot(k, L, build_index_time, search_time, recall, touched, proportion, 'GIST1M')

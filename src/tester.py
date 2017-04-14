@@ -110,7 +110,7 @@ class PLSH:
 			#	matchs.extend(compare_hamming[i][1])
 			#print matchs[:k]
 			key_ = self.hash(hash_funcs, query_, ix)
-			print key_
+			#print key_
 			matchs = table.get(key_, [])
 			candidates.update(matchs)
 			#Enlarge the candidate set
