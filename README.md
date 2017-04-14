@@ -94,19 +94,20 @@ acc = recall(result, ground_truth, k)
 * Macbook Pro 2014 mid 
 * CPU: Intel Core i5, 3.30GHz, 8GB RAM
 
-### SIFT1M Dataset
+#### SIFT1M Dataset
 
+<p align="center">Precision-Performance tradeoff - up and to the right is better</p>
 <p align="center">
-    <img src="https://ooo.0o0.ooo/2017/04/14/58f0eeab73cb2.png" width="640">
+    <img src="https://ooo.0o0.ooo/2017/04/14/58f0eeab73cb2.png" width="480">
 </p>
 <p align="center">
     Figure 1: SIFT1M dataset
 </p>
 
-### GIST1M Dataset
-
+#### GIST1M Dataset
+<p align="center">Precision-Performance tradeoff - up and to the right is better</p>
 <p align="center">
-    <img src="https://ooo.0o0.ooo/2017/04/14/58f0eeab5b7f5.png" width="640">
+    <img src="https://ooo.0o0.ooo/2017/04/14/58f0eeab5b7f5.png" width="480">
 </p>
 <p align="center">
     Figure 2: GIST1M dataset
