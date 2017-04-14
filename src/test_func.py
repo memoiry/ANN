@@ -289,13 +289,13 @@ def exp_flann_sift():
 	np.savetxt('result/SIFT1M_FLANN.csv',np.array(res),delimiter = ",")
 
 def exp_flann_gist():
-	#dataset = vecs_read('../data/gist/gist_base.fvecs')
-	#query = vecs_read('../data/gist/gist_query.fvecs')
-	#ground_truth = vecs_read('../data/gist/gist_groundtruth.ivecs')
-	dataset = vecs_read('/volumes/seagate backup plus drive/gist/gist_base.fvecs')
-	query = vecs_read('/volumes/seagate backup plus drive/gist/gist_query.fvecs')
+	dataset = vecs_read('../data/gist/gist_base.fvecs')
+	query = vecs_read('../data/gist/gist_query.fvecs')
+	ground_truth = vecs_read('../data/gist/gist_groundtruth.ivecs')
+	#dataset = vecs_read('/volumes/seagate backup plus drive/gist/gist_base.fvecs')
+	#query = vecs_read('/volumes/seagate backup plus drive/gist/gist_query.fvecs')
 	query = query[:20]
-	ground_truth = vecs_read('/volumes/seagate backup plus drive/gist/gist_groundtruth.ivecs')
+	#ground_truth = vecs_read('/volumes/seagate backup plus drive/gist/gist_groundtruth.ivecs')
 	k_num = 20
 	tree_num = 16
 	target_recall = 92
@@ -352,12 +352,12 @@ def exp_lsh_sift():
 
 
 def exp_lsh_gist():
-	#dataset = vecs_read('../data/gist/gist_base.fvecs')
-	#query = vecs_read('../data/gist/gist_query.fvecs')
-	#ground_truth = vecs_read('../data/gist/gist_groundtruth.ivecs')
-	dataset = vecs_read('/volumes/seagate backup plus drive/gist/gist_base.fvecs')
-	query = vecs_read('/volumes/seagate backup plus drive/gist/gist_query.fvecs')
-	ground_truth = vecs_read('/volumes/seagate backup plus drive/gist/gist_groundtruth.ivecs')
+	dataset = vecs_read('../data/gist/gist_base.fvecs')
+	query = vecs_read('../data/gist/gist_query.fvecs')
+	ground_truth = vecs_read('../data/gist/gist_groundtruth.ivecs')
+	#dataset = vecs_read('/volumes/seagate backup plus drive/gist/gist_base.fvecs')
+	#query = vecs_read('/volumes/seagate backup plus drive/gist/gist_query.fvecs')
+	#ground_truth = vecs_read('/volumes/seagate backup plus drive/gist/gist_groundtruth.ivecs')
 	query_num = 10
 	num = query.shape[0]
 	rand_index = np.random.randint(0,num,size=(query_num))

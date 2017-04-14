@@ -191,11 +191,12 @@ def plot_v2(kdtree_sift, lsh_sift, datatype):
 	#print df
 	plt.figure()
 	fgrid = sns.lmplot(x="recall(%)", y="Queries per second(s-1) - lager is better", hue='algorithms',data=df,
-			fit_reg=False, ci=None, scatter_kws={"s": 80},legend=False).set_titles("Precision-Performance tradeoff - up and to the right is better");
+			fit_reg=False, ci=None, scatter_kws={"s": 80},legend=False);
 	axes = fgrid.axes
 	fgrid.despine(left=True)
 	plt.legend(loc='upper left')
 	fgrid.set(yscale="log")
+	fgrid.set_titles("Precision-Performance tradeoff - up and to the right is better")
 	axes[0,0].set_ylim(1e-2,1e5)
 	axes[0,0].set_xlim(0,)
 	plt.savefig('figure/{}_benchmark.png'.format(datatype))
