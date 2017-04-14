@@ -286,7 +286,7 @@ def exp_flann_sift():
 		res.append((recall_,tim))
 		checks = checks + 3 * count
 		print tree_num,'\t{}\t{} %\t{}'.format(checks,recall_,tim)
-	np.savetxt('SIFT1M_FLANN.csv',np.array(res),delimiter = ",")
+	np.savetxt('result/SIFT1M_FLANN.csv',np.array(res),delimiter = ",")
 
 def exp_flann_gist():
 	#dataset = vecs_read('../data/gist/gist_base.fvecs')
@@ -319,7 +319,7 @@ def exp_flann_gist():
 		res.append((recall_,tim))
 		checks = checks + 8 * count
 		print tree_num,'\t{}\t{} %\t{}'.format(checks,recall_,tim)
-	np.savetxt('GIST1M_FLANN.csv',np.array(res),delimiter = ",")
+	np.savetxt('result/GIST1M_FLANN.csv',np.array(res),delimiter = ",")
 
 def exp_lsh_sift():
 	query_num = 10
@@ -348,7 +348,7 @@ def exp_lsh_sift():
 			acc = recall(result, ground_truth, k_num)
 			res.append((acc, tim))
 			print '{}\t{}\t{}\t{}'.format(k,L,acc,tim)
-	np.savetxt("SIFT1M_LSH.csv", res, delimiter = ",")
+	np.savetxt("result/SIFT1M_LSH.csv", res, delimiter = ",")
 
 
 def exp_lsh_gist():
@@ -380,5 +380,5 @@ def exp_lsh_gist():
 			acc = recall(result, ground_truth, k_num)
 			res.append((acc, tim))
 			print '{}\t{}\t{}\t{}'.format(k,L,acc,tim)
-	np.savetxt("GIST1M_LSH.csv", res, delimiter = ",")
+	np.savetxt("result/GIST1M_LSH.csv", res, delimiter = ",")
 

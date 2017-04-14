@@ -185,18 +185,19 @@ def plot_v2(kdtree_sift, lsh_sift, datatype):
 	temp[:,:2] = np.concatenate((kdtree_sift, lsh_sift),axis = 0)
 	temp[:num,2] = 1
 	temp[num:,2] = 2
-	df = pd.DataFrame(temp, columns = ['recall', 'Queries_per_second','algorithms'])	
+	df = pd.DataFrame(temp, columns = ['recall(%)', 'Queries per second(s-1) - lager is better','algorithms'])	
 	df['algorithms'][df['algorithms'] == 1] = 'FLANN-KDTREE'
 	df['algorithms'][df['algorithms'] == 2] = 'LSH'
 	#print df
 	plt.figure()
-	fgrid = sns.lmplot(x="recall", y="Queries_per_second", hue='algorithms',data=df,
+	fgrid = sns.lmplot(x="recall(%)", y="Queries per second(s-1) - lager is better", hue='algorithms',data=df,
 			fit_reg=False, ci=None, scatter_kws={"s": 80},legend=False);
 	axes = fgrid.axes
 	fgrid.despine(left=True)
 	plt.legend(loc='upper left')
 	fgrid.set(yscale="log")
 	axes[0,0].set_ylim(1e-2,1e5)
+	axes[0,0].set_xlim(0,)
 	plt.savefig('figure/{}_benchmark.png'.format(datatype))
 	plt.close(0)
 
@@ -210,8 +211,8 @@ if __name__ == '__main__':
 	#test_()
 	datatype = ['SIFT','GIST']
 	for i in datatype:
-		kdtree_sift = np.loadtxt('%s1M_FLANN.csv' % (i), delimiter=',')
-		lsh_sift = np.loadtxt('%s1M_LSH.csv' % (i), delimiter=',')
+		kdtree_sift = np.loadtxt('result/%s1M_FLANN.csv' % (i), delimiter=',')
+		lsh_sift = np.loadtxt('result/%s1M_LSH.csv' % (i), delimiter=',')
 		plot_v2(kdtree_sift, lsh_sift, i)
 	#fname = 'GIST1M_FLANN.csv'
 	#if not os.path.isfile(fname):

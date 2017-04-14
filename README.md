@@ -13,23 +13,22 @@ Install Pyflann, Seaborn, and download the source code from github.
 pip install pyflann
 pip install seaborn
 git clone https://github.com/memoiry/flann_lsh
+cd flann_lsh/src
 ```
 
-Put the sift and gist data in the corresponding data folder and run the command below.
+Put the sift and gist data in the corresponding data folder and run the command below. It may take few hours to finish. The result will be put on the result folder in which actually contains my precomputed results.
 
 ```bash
-cd flann_lsh/src
-python run_exp.py
+python run_exp_v2.py
 ```
 
-To generate the result figure, run the command below. The analysis will be put in figure folder.
+To generate the figure, run the command below. The analysis will be put in figure folder.
 
 ```bash
 python analysis.py
 ```
 
 ### PLSH class usage
-
 
 PLSH is a class used to create a local sensitive hash object.
 
@@ -90,19 +89,27 @@ acc = recall(result, ground_truth, k)
 
 ## Result
 
-
 ### Hardware 
 
 * Macbook Pro 2014 mid 
 * CPU: Intel Core i5, 3.30GHz, 8GB RAM
 
-### SIFT1M
+### SIFT1M Dataset
 
 <p align="center">
-    <img src="https://ooo.0o0.ooo/2017/04/10/58eb9f1e6b466.png" width="640">
+    <img src="https://ooo.0o0.ooo/2017/04/14/58f0eeab73cb2.png" width="640">
 </p>
-<p align="center" style="color:rgb(220,220,220);">
-    Figure 6: GIST1M dataset using LSH with the number of hash table vary.
+<p align="center">
+    Figure 1: SIFT1M dataset
+</p>
+
+### GIST1M Dataset
+
+<p align="center">
+    <img src="https://ooo.0o0.ooo/2017/04/14/58f0eeab5b7f5.png" width="640">
+</p>
+<p align="center">
+    Figure 2: GIST1M dataset
 </p>
 
 ## lsh原理
