@@ -12,6 +12,7 @@ Install Pyflann, Seaborn, and download the source code from github.
 ```bash
 pip install pyflann
 pip install seaborn
+pip install memory_profiler
 git clone https://github.com/memoiry/flann_lsh
 cd flann_lsh/src
 ```
@@ -98,20 +99,59 @@ acc = recall(result, ground_truth, k)
 
 <p align="center">Precision-Performance tradeoff - up and to the right is better</p>
 <p align="center">
-    <img src="https://ooo.0o0.ooo/2017/04/14/58f0eeab73cb2.png" width="480">
+    <img src="https://ooo.0o0.ooo/2017/04/16/58f2d081814eb.png" width="480">
 </p>
 <p align="center">
     Figure 1: SIFT1M dataset
 </p>
 
+
+|The number of trees| Build index time| Peak memory|
+| --- | --- | --- |
+|2|3.9 s|689.0 MB|
+|8|16.5 s|1046.7 MB|
+|16|34.8 s|1218.9 MB|
+|24|49.3 s|1560.0 MB|
+
+<p align="center">
+    <img src="https://ooo.0o0.ooo/2017/04/16/58f2520020e84.png" width="480">
+</p>
+<p align="center">
+    Figure 2: The memory usage of LSH in building the index for SIFT1M dataset 
+</p>
+
+
 #### GIST1M Dataset
 <p align="center">Precision-Performance tradeoff - up and to the right is better</p>
 <p align="center">
-    <img src="https://ooo.0o0.ooo/2017/04/14/58f0eeab5b7f5.png" width="480">
+    <img src="https://ooo.0o0.ooo/2017/04/16/58f2d2018ebb5.png" width="480">
 </p>
 <p align="center">
-    Figure 2: GIST1M dataset
+    Figure 3: GIST1M dataset
 </p>
+
+|The number of trees| Build index time| Peak memory|
+| --- | --- | --- |
+|8|64.9 s|4184.2 MB|
+|16|113.9 s|4687.7 MB|
+|24|175.8 s|5176.0 MB|
+
+
+<p align="center">
+    <img src="https://ooo.0o0.ooo/2017/04/16/58f251a74bda7.png" width="480">
+</p>
+<p align="center">
+    Figure 4: The memory usage of LSH in building the index for GIST1M dataset 
+</p>
+
+#### 结论
+
+1. 可以看到两个算法总体上在中间一段是近似对数线性的, 而在两端则变化较快, 精度要求越高, 近似搜索的速度也就越慢. 
+2. flann的kdtree算法的性能在SIFT和GIST数据集上明显优于我实现的p-stable LSH的.
+3. 在精度要求较高的情况下, KDTREE算法中并行树的数目对近似搜索的速度的影响不太大.
+4. 随着并行树数目的增多, KDTREE算法建立索引时的峰值内存使用也会增多.
+5. 随着精度要求的增大, 在并行树的数目足够多的情况下, KDTREE建索引的时间不会有太大的影响. 这是由于KDTREE算法精度主要依赖于checks数目, 而建索引时间主要受并行树数目决定.
+6. 随着精度要求的增大, LSH算法建索引的时间也会随之增大, 同时其建索引阶段所a占的峰值内存和建立好后索引数据结构本身所占的内存也会随之增大.
 
 ## lsh原理
 

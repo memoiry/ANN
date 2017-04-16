@@ -1,6 +1,7 @@
 from utils import *
 import numpy as np
 from tester import *
+from memory_profiler import memory_usage
 
 def random_test():
 	dataset = np.random.randn(10000,100)*100
@@ -258,127 +259,163 @@ def test_lsh():
 	print acc
 
 def exp_flann_sift():
+	global flan, dataset
 	dataset = vecs_read('../data/sift/sift_base.fvecs')
 	#print dataset
 	query = vecs_read('../data/sift/sift_query.fvecs')
-	#query = query[:1000]
+	query = query[:1000]
 	ground_truth = vecs_read('../data/sift/sift_groundtruth.ivecs')
 	#ground_truth = ground_truth[:1000]
-	tree_num = 16
+	tree_num_set = [2,8,16,24]
 	target_recall = 92
-	res = []
-	checks = k_num
+	k_num = 20
 	print "tree_num\tchecks\trecall\tQueries per second"
-	recall_ = 0
-	checks = k_num
-	flan = pyflann.FLANN(algorithm = "kdtree", trees = tree_num, checks = checks)
-	params = flan.build_index(dataset)
 	query_num = query.shape[0]
-	count = 0
-	while recall_ < target_recall:
-		count = count + 1
+	res = []
+	for tree_num in tree_num_set:
+		checks = k_num
+		recall_ = 0
+		count = 0
+		flan = pyflann.FLANN(algorithm = "kdtree", trees = tree_num, checks = checks)
 		start = dt.datetime.now()
-		result, dists = flan.nn_index(query, k_num, checks = checks)
+		mem_usage = memory_usage(build_index)
 		end = dt.datetime.now()
-		tim = (end-start).total_seconds()
-		tim = query_num/tim
-		recall_ = recall(result, ground_truth, k_num)
-		res.append((recall_,tim))
-		checks = checks + 3 * count
-		print tree_num,'\t{}\t{} %\t{}'.format(checks,recall_,tim)
+		tim1 = (end-start).total_seconds()
+		print 'Build index time: {} s'.format(tim1)
+		print('Maximum memory usage: %s MB' % max(mem_usage))
+		print 'Total memory usage: ', get_size(flan)/1024/1024,'MB'
+		while recall_ < target_recall:
+			count = count + 1
+			start = dt.datetime.now()
+			result, dists = flan.nn_index(query, k_num, checks = checks)
+			end = dt.datetime.now()
+			tim = (end-start).total_seconds()
+			tim = query_num/tim
+			recall_ = recall(result, ground_truth, k_num)
+			res.append((recall_,tim,tree_num))
+			checks = checks + 8 * count
+			print tree_num,'\t{}\t{} %\t{}'.format(checks,recall_,tim)
 	np.savetxt('result/SIFT1M_FLANN.csv',np.array(res),delimiter = ",")
 
+def build_index():
+	global flan, dataset
+	flan.build_index(dataset)
+
 def exp_flann_gist():
-	dataset = vecs_read('../data/gist/gist_base.fvecs')
-	query = vecs_read('../data/gist/gist_query.fvecs')
-	ground_truth = vecs_read('../data/gist/gist_groundtruth.ivecs')
-	#dataset = vecs_read('/volumes/seagate backup plus drive/gist/gist_base.fvecs')
-	#query = vecs_read('/volumes/seagate backup plus drive/gist/gist_query.fvecs')
-	query = query[:20]
-	#ground_truth = vecs_read('/volumes/seagate backup plus drive/gist/gist_groundtruth.ivecs')
-	k_num = 20
-	tree_num = 16
+	global flan, dataset
+	#dataset = vecs_read('../data/gist/gist_base.fvecs')
+	#query = vecs_read('../data/gist/gist_query.fvecs')
+	#ground_truth = vecs_read('../data/gist/gist_groundtruth.ivecs')
+	dataset = vecs_read('/volumes/seagate backup plus drive/gist/gist_base.fvecs')
+	query = vecs_read('/volumes/seagate backup plus drive/gist/gist_query.fvecs')
+	query = query[:300]
+	ground_truth = vecs_read('/volumes/seagate backup plus drive/gist/gist_groundtruth.ivecs')
+	tree_num_set = [2,8,16,24]
 	target_recall = 92
-	res = []
-	checks = k_num
+	k_num = 20
 	print "tree_num\tchecks\trecall\tQueries per second"
-	recall_ = 0
-	checks = k_num
-	flan = pyflann.FLANN(algorithm = "kdtree", trees = tree_num, checks = checks)
-	params = flan.build_index(dataset)
 	query_num = query.shape[0]
-	count = 0
-	while recall_ < target_recall:
-		count = count + 1
+	res = []
+	for tree_num in tree_num_set:
+		checks = k_num
+		recall_ = 0
+		count = 0
+		flan = pyflann.FLANN(algorithm = "kdtree", trees = tree_num, checks = checks)
 		start = dt.datetime.now()
-		result, dists = flan.nn_index(query, k_num, checks = checks)
+		mem_usage = memory_usage(build_index)
 		end = dt.datetime.now()
-		tim = (end-start).total_seconds()
-		tim = query_num/tim
-		recall_ = recall(result, ground_truth, k_num)
-		res.append((recall_,tim))
-		checks = checks + 8 * count
-		print tree_num,'\t{}\t{} %\t{}'.format(checks,recall_,tim)
+		tim1 = (end-start).total_seconds()
+		print 'Build index time: {} s'.format(tim1)
+		print('Maximum memory usage: %s MB' % max(mem_usage))
+		print 'Total memory usage: ', get_size(flan)/1024/1024,'MB'
+		while recall_ < target_recall:
+			count = count + 1
+			start = dt.datetime.now()
+			result, dists = flan.nn_index(query, k_num, checks = checks)
+			end = dt.datetime.now()
+			tim = (end-start).total_seconds()
+			tim = query_num/tim
+			recall_ = recall(result, ground_truth, k_num)
+			res.append((recall_,tim,tree_num))
+			checks = checks + 100 * count
+			print tree_num,'\t{}\t{} %\t{}'.format(checks,recall_,tim)
 	np.savetxt('result/GIST1M_FLANN.csv',np.array(res),delimiter = ",")
 
 def exp_lsh_sift():
-	query_num = 10
+	global lsh, dataset
 	dataset = vecs_read('../data/sift/sift_base.fvecs')
 	query = vecs_read('../data/sift/sift_query.fvecs')
+	ground_truth = vecs_read('../data/sift/sift_groundtruth.ivecs')
+	query_num = 10
 	num = query.shape[0]
 	rand_index = np.random.randint(0,num,size=(query_num))
 	query = query[rand_index]
-	ground_truth = vecs_read('../data/sift/sift_groundtruth.ivecs')
 	ground_truth = ground_truth[rand_index]
 	k_num = 20
 	w=1
 	k_set = [8,12,16]
 	L_set = [1,2,4,8,12]
 	res = []
-	print 'k\tL\trecall\tQueries per second'
+	print 'k\tL\trecall\tQueries per second\tBuild index time(s)\tmax memory(MB)\ttotal memory(MB)'
 	for L in L_set:
 		for k in k_set:
 			lsh =  PLSH(k,L,w)
-			lsh.build_index(dataset)
+			start = dt.datetime.now()
+			mem_usage = memory_usage(build_lsh)
+			#print mem_usage
+			end = dt.datetime.now()
+			tim1 = (end-start).total_seconds()
+			max_memory = max(mem_usage)
+			total_memory = get_size(lsh)/1024/1024
 			start = dt.datetime.now()
 			result, dists, candi_avg = lsh.query(query, k_num)
 			end = dt.datetime.now()
 			tim = (end-start).total_seconds()
 			tim = query_num/tim
 			acc = recall(result, ground_truth, k_num)
-			res.append((acc, tim))
-			print '{}\t{}\t{}\t{}'.format(k,L,acc,tim)
+			res.append((acc, tim,tim1,max_memory,total_memory))
+			#print res
+			print '{}\t{}\t{}\t{}\t{}\t{}\t{}'.format(k,L,acc,tim,tim1,max_memory,total_memory)
 	np.savetxt("result/SIFT1M_LSH.csv", res, delimiter = ",")
 
+def build_lsh():
+	global lsh, dataset
+	lsh.build_index(dataset)
 
 def exp_lsh_gist():
-	dataset = vecs_read('../data/gist/gist_base.fvecs')
-	query = vecs_read('../data/gist/gist_query.fvecs')
-	ground_truth = vecs_read('../data/gist/gist_groundtruth.ivecs')
-	#dataset = vecs_read('/volumes/seagate backup plus drive/gist/gist_base.fvecs')
-	#query = vecs_read('/volumes/seagate backup plus drive/gist/gist_query.fvecs')
-	#ground_truth = vecs_read('/volumes/seagate backup plus drive/gist/gist_groundtruth.ivecs')
+	global lsh, dataset
+	#dataset = vecs_read('../data/gist/gist_base.fvecs')
+	#query = vecs_read('../data/gist/gist_query.fvecs')
+	#ground_truth = vecs_read('../data/gist/gist_groundtruth.ivecs')
+	dataset = vecs_read('/volumes/seagate backup plus drive/gist/gist_base.fvecs')
+	query = vecs_read('/volumes/seagate backup plus drive/gist/gist_query.fvecs')
+	ground_truth = vecs_read('/volumes/seagate backup plus drive/gist/gist_groundtruth.ivecs')
 	query_num = 10
 	num = query.shape[0]
 	rand_index = np.random.randint(0,num,size=(query_num))
 	query = query[rand_index]
 	ground_truth = ground_truth[rand_index]
 	k_num = 20
+	w=1
 	k_set = [8,12,16]
 	L_set = [1,2,4,8,12]
 	res = []
-	print 'k\tL\trecall\tQueries per second'
+	print 'k\tL\trecall\tQueries per second\tBuild index time(s)\tmax memory(MB)\ttotal memory(MB)'
 	for L in L_set:
 		for k in k_set:
-			lsh =  PLSH(k,L,1)
-			lsh.build_index(dataset)
+			lsh =  PLSH(k,L,w)
+			start = dt.datetime.now()
+			mem_usage = memory_usage(build_lsh)
+			end = dt.datetime.now()
+			tim1 = (end-start).total_seconds()
+			max_memory = max(mem_usage)
+			total_memory = get_size(lsh)/1024/1024
 			start = dt.datetime.now()
 			result, dists, candi_avg = lsh.query(query, k_num)
 			end = dt.datetime.now()
 			tim = (end-start).total_seconds()
 			tim = query_num/tim
 			acc = recall(result, ground_truth, k_num)
-			res.append((acc, tim))
-			print '{}\t{}\t{}\t{}'.format(k,L,acc,tim)
+			res.append((acc, tim, tim1, max_memory, total_memory))
+			print '{}\t{}\t{}\t{}\t{}\t{}\t{}'.format(k,L,acc,tim,tim1,max_memory,total_memory)
 	np.savetxt("result/GIST1M_LSH.csv", res, delimiter = ",")
-

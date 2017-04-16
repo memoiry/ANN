@@ -179,26 +179,52 @@ def plot_single_v2(result, datatype):
 	plt.close(0)
 
 def plot_v2(kdtree_sift, lsh_sift, datatype):
+	num_lsh = lsh_sift.shape[0]
+	temp2 = np.zeros((num_lsh * 2, 3))
+	temp2[:num_lsh, :2] = lsh_sift[:,[0,3]]
+	temp2[num_lsh:, :2] = lsh_sift[:, [0,4]]
+	temp2[:num_lsh, 2] = 1
+	temp2[num_lsh:, 2] = 2
+	df2 = pd.DataFrame(temp2, columns = ['recall(%)', 'memory usage(MB)', 'memory type'])
+	df2['memory type'][df2['memory type'] == 1] = 'peak memory'
+	df2['memory type'][df2['memory type'] == 2] = 'total memory'
+	lsh_temp = np.zeros((num_lsh*2, 3))
+	lsh_temp[:num_lsh,:2] = lsh_sift[:,:2]
+	lsh_temp[num_lsh:,:2] = lsh_sift[:,[0,2]]
+	lsh_temp[num_lsh:,2] = 1
 	num = kdtree_sift.shape[0]
-	num_lsh = lsh_sift.shape[0]	
-	temp = np.zeros((num+num_lsh, 3))
-	temp[:,:2] = np.concatenate((kdtree_sift, lsh_sift),axis = 0)
-	temp[:num,2] = 1
-	temp[num:,2] = 2
+	temp = np.concatenate((kdtree_sift, lsh_temp),axis = 0)
 	df = pd.DataFrame(temp, columns = ['recall(%)', 'Queries per second(s-1) - lager is better','algorithms'])	
-	df['algorithms'][df['algorithms'] == 1] = 'FLANN-KDTREE'
-	df['algorithms'][df['algorithms'] == 2] = 'LSH'
-	#print df
+	df['algorithms'][df['algorithms'] == 0] = 'LSH-Query'
+	df['algorithms'][df['algorithms'] == 1] = 'LSH-Build index time'
+	df['algorithms'][df['algorithms'] == 2] = 'KDTREE Tree 2'
+	df['algorithms'][df['algorithms'] == 8] = 'KDTREE Tree 8'
+	df['algorithms'][df['algorithms'] == 16] = 'KDTREE Tree 16'
+	df['algorithms'][df['algorithms'] == 24] = 'KDTREE Tree 24'
+
+	#Memory plot
+	plt.figure()
+	fgrid = sns.lmplot(x="recall(%)", y="memory usage(MB)", hue="memory type", data=df2, legend=False);
+	fgrid.despine(left=True)
+	axes = fgrid.axes
+	axes[0,0].set_xlim(0,100)
+	plt.legend(loc='upper right',fontsize=9)
+	fgrid.set(yscale="log")
+	fgrid.set_titles("Peak memory and Total memory")
+	plt.savefig('figure/{}_benchmark_memory.png'.format(datatype))
+	plt.close(0)
+
+	#Benchmark plot
 	plt.figure()
 	fgrid = sns.lmplot(x="recall(%)", y="Queries per second(s-1) - lager is better", hue='algorithms',data=df,
-			fit_reg=False, ci=None, scatter_kws={"s": 80},legend=False);
+			fit_reg=False, ci=None,legend=False);
 	axes = fgrid.axes
 	fgrid.despine(left=True)
-	plt.legend(loc='upper left')
+	plt.legend(loc='upper right',fontsize=7)
 	fgrid.set(yscale="log")
 	fgrid.set_titles("Precision-Performance tradeoff - up and to the right is better")
-	axes[0,0].set_ylim(1e-2,1e5)
-	axes[0,0].set_xlim(0,)
+	axes[0,0].set_ylim(1e-2,1e6)
+	axes[0,0].set_xlim(0,100)
 	plt.savefig('figure/{}_benchmark.png'.format(datatype))
 	plt.close(0)
 
